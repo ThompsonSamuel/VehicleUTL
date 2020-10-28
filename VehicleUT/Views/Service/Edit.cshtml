@@ -1,0 +1,98 @@
+﻿@model VehicleUT.Models.ViewModels.ServiceVM
+
+<form method="post" enctype="multipart/form-data">
+    <input asp-for="service.ServiceId" hidden />
+    <div class="border p-3">
+        <div class="form-group row">
+            <h2 class="text-info pl-3">Edit Service</h2>
+        </div>
+
+        <div class="row">
+            <div class="col-8">
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="service.VehicleId"></label>
+                    </div>
+                    <div class="col-8">
+                        <select asp-for="service.VehicleId" asp-items="@Model.vehicleSelectList" class="form-control">
+                            <option disabled selected>--Select Category--</option>
+                        </select>
+                        <span asp-validation-for="service.VehicleId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="service.Date"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="service.Date" class="form-control" />
+                        <span asp-validation-for="service.Date" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="service.Title">Type of Service</label>
+                    </div>
+                    <div class="col-8">
+                        <select asp-for="service.Title" asp-items="@Model.typeService" class="form-control">
+                            <option disabled selected>--Select Service Type--</option>
+                        </select>
+                        <span asp-validation-for="service.Title" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="service.Location">Name of Location</label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="service.Location" class="form-control" />
+                        <span asp-validation-for="service.Location" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="service.Description"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="service.Description" class="form-control" />
+                        <span asp-validation-for="service.Description" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-4">
+                        Image of Receipt
+                    </div>
+                    <div class="col-8">
+                        <input type="file" name="files" id="uploadBox" multiple class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-8 offset-4 row">
+
+                        <div class="col">
+                            <input type="submit" onclick="return validateInput()" class="btn btn-info w-100" value="Update" />
+                        </div>
+                        <div class="col">
+                            <a asp-action="Index" class="btn btn-warning w-100"><i class="fas fa-sign-out-alt"></i> Back</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <img src="@Startup.ImagePath@Model.service.Receipt" class="w-100" style="border-radius:5px; border:1px solid #bbb" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
