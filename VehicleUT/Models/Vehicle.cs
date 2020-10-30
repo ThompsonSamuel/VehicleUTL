@@ -19,6 +19,9 @@ namespace VehicleUT.Models
         [Required]
         public int Mileage { get; set; }
 
+        public int milesGone { get; set; }
+        public double fuelUsed { get; set; }
+
         public string UserId { get; set; }
         [ForeignKey(name:"UserId")]
         public virtual IdentityUser User { get; set; }

@@ -49,10 +49,7 @@
                 </div>
             </div>
             <div class="modal" id="@Model.ElementAt(i).Mileage">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>New Mileage</h3>
-                    </div>
+                <div class="modal-content" style="width:320px" >
                     <div class="modal-body" style="text-align:center">
                         <form method="post" asp-action="Edit">
                             <input asp-for="@Model.ElementAt(i).UserId" hidden />
@@ -60,7 +57,13 @@
                             <input asp-for="@Model.ElementAt(i).Make" hidden />
                             <input asp-for="@Model.ElementAt(i).Model" hidden />
                             <input asp-for="@Model.ElementAt(i).Year" hidden />
-                            <input asp-for="@Model.ElementAt(i).Mileage" />
+                            <input asp-for="@Model.ElementAt(i).milesGone" hidden />
+                            <div style="padding:20px">
+                                <input asp-for="@Model.ElementAt(i).fuelUsed" value="" />
+                            </div>
+                            <div style="padding:20px">
+                                <input asp-for="@Model.ElementAt(i).Mileage" />
+                            </div>
                             <div style="padding:20px">
                                 <input type="submit" class="btn btn-success w-40" value="Submit" />
                                 <a asp-action="Index" class="btn btn-warning w-40"><i class="fas fa-sign-out-alt"></i> Back</a>

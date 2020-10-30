@@ -9,7 +9,7 @@
 
 <body>
     <div class="row">
-        <div id='calendar' class="column1">
+        <div id="calendar" class="column1">
             <p>Calender from <a href="https://fullcalendar.io/">FullCalendar</a></p>
         </div>
         <div class="column2">
@@ -20,13 +20,19 @@
                 <input type="button" id='swap' style="width:80%" class="btn btn-info" value="Calendar View" />
             </div>
             <div style="padding-top:20px">
+                <p style="font-size:smaller">Search by Location or Type</p>
+                <input type="text" id="searchbar" />
+            </div>
+            <div style="padding-top:20px">
                 @for (int i = 0; i < Model.Count; i++) {
-                    <div value="@i" class="filter; btn btn-light" style="width:80%; margin-bottom:20px;">
-                        <input id="@i" type="checkbox" checked />
-                        @foreach (var j in Model.ElementAt(i).ServiceID) {
-                            <p class="@i" style="display:block">@j</p>
-                        }
-                        <label>@Model.ElementAt(i).Name</label>
+                    <div class="btn btn-light" name="@Model.ElementAt(i).VehicleID" style="width:80%; margin-bottom:20px;">
+                        <div class="filter">
+                            <input id="@i" type="checkbox" class="filterCheck" checked />
+                            @foreach (var j in Model.ElementAt(i).ServiceID) {
+                                <p class="@i" style="display:block" hidden>@j</p>
+                            }
+                            <label>@Model.ElementAt(i).Name</label>
+                        </div>
                     </div>
                 }
             </div>
@@ -60,7 +66,9 @@
 
 
 @section Scripts{
-    <script src='~/calendar/main.js'></script>
+    <script src="~/calendar/main.js"></script>
+    <script src="~/js/site-v1.js"></script>
+    <script src="~/calendar/locales-all.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
@@ -70,7 +78,6 @@
                 events: '/Service/GetEvents',
                 displayEventTime: false,
                 color: event.backgroundColor,
-                borderColor: event.backgroundColor,
                 eventClick: function (info) {
                     $('#modal-edit').attr('href', document.URL + info.event.extendedProps.edit);
                     $('.modal-title').html(info.event.title);
@@ -84,7 +91,6 @@
                     })
                 },
             });
-            calendar.render();
 
             var swap = document.getElementById('swap');
             swap.addEventListener('click', function () {
@@ -96,68 +102,49 @@
                     calendar.changeView('dayGridMonth');
                     swap.value = 'List View';
                 }
+                var date = new Date();
+                calendar.gotoDate(date.toISOString());
             });
+
             var filter = document.getElementsByClassName('filter');
-            for (var i = 0; i < filter.length; i++) {
-                filter[i].addEventListener('click', function () {
-                    var checkbox = document.getElementById(this.value);
-                    //var ids = document.getElementsByClassName(this.value);
+            for (let k = 0; k < filter.length; k++) {
+                var fil = filter[k]
+                fil.addEventListener('click', function () {
+
+                    var checkbox = document.getElementById(k);
+                    var ids = document.getElementsByClassName(k)
                     if (checkbox.checked == true) {
-                        checkbox.checked = false;
+                        checkbox.checked = false
+                        for (var i = 0; i < ids.length; i++) {
+                            calendar.getEventById(ids[i].innerHTML).setProp('display', 'none')
+                        }
                     }
                     else {
-                        checkbox.checked = true;
+                        checkbox.checked = true
+                        for (var i = 0; i < ids.length; i++) {
+                            calendar.getEventById(ids[i].innerHTML).setProp('display', 'auto')
+                        }
                     }
-                })
+                });
             };
-            
+
+            var search = document.getElementById('searchbar');
+            search.addEventListener('keyup', function () {
+                let events = calendar.getEvents()
+                for (var i = 0; i < events.length; i++) {
+                    var tit = events[i].title;
+                    var loc = events[i].extendedProps.location;
+                    if (tit.toUpperCase().indexOf(search.value.toUpperCase()) > -1 || loc.toUpperCase().indexOf(search.value.toUpperCase()) > -1) {
+                        events[i].setProp('display', 'auto');
+                    }
+                    else {
+                        events[i].setProp('display', 'none');
+                    }
+                    
+                };
+            });
+            calendar.render();
         });
-
-        //function filter(id) {
-        //    var checkbox = document.getElementById(id);
-        //    var ids = document.getElementsByClassName(id);
-        //    var calendar = document.getElementById('calendar');
-        //    if (checkbox.checked == true) {
-        //        checkbox.checked = false;
-        //        for (var i = 0; i < ids.length; i++) {
-        //            calendar.getEventById(ids[i].textContent).display = 'none';
-        //            calendar.remove();
-        //        }
-        //    }
-        //    else {
-        //        checkbox.checked = true;
-        //    }
-        //};
-
-        function dateFormat(time) {
-            var dt = new Date(time);
-            var DD = ("0" + dt.getDate()).slice(-2);
-            var month = new Array();
-            month[0] = "January";
-            month[1] = "February";
-            month[2] = "March";
-            month[3] = "April";
-            month[4] = "May";
-            month[5] = "June";
-            month[6] = "July";
-            month[7] = "August";
-            month[8] = "September";
-            month[9] = "October";
-            month[10] = "November";
-            month[11] = "December";
-            var MM = month[dt.getMonth()];
-            if (dt.getHours() > 12) {
-                var hh = (dt.getHours() - 12);
-                var ht = 'PM';
-            }
-            else {
-                var hh = dt.getHours();
-                var ht = 'AM';
-            }
-            var mm = ("0" + dt.getMinutes()).slice(-2);
-            var date_string = MM + " " + DD + " " + hh + ":" + mm + " " + ht;
-            return date_string;
-        }
 
     </script>
 }

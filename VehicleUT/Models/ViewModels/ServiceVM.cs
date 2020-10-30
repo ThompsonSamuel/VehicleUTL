@@ -12,8 +12,8 @@ namespace VehicleUT.Models.ViewModels {
 
         public List<SelectListItem> typeService = new List<SelectListItem>() { 
             new SelectListItem { Text = "Service", Value = "Service" }, 
-            new SelectListItem{ Text = "Repair", Value = "Repair" },
-            new SelectListItem{ Text = "Issue", Value = "Issue" }
+            new SelectListItem { Text = "Repair", Value = "Repair" },
+            new SelectListItem { Text = "Issue", Value = "Issue" }
         };
     }
 }

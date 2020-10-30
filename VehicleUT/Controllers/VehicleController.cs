@@ -49,6 +49,9 @@ namespace VehicleUT.Controllers {
         [HttpPost]
         public IActionResult Edit(Vehicle vehicle) {
             if (ModelState.IsValid) {
+                Vehicle dbVehicle = db.Vehicle.Find(vehicle.VehicleId);
+                Vehicle newData = 
+
                 db.Vehicle.Update(vehicle);
                 db.SaveChanges();
                 return RedirectToAction(nameof(Index));

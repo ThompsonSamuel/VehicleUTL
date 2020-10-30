@@ -56,6 +56,7 @@ namespace VehicleUT.Controllers {
             });
             return new JsonResult(events);
         }
+
         public string SetColor(string title) {
             if (title == "Service")
                 return "#007bff";
