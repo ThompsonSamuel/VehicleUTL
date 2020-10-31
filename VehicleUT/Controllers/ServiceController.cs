@@ -83,7 +83,7 @@ namespace VehicleUT.Controllers {
             if (ModelState.IsValid) {
                 var files = HttpContext.Request.Form.Files;
                 string webRootPath = webHostEnvironment.WebRootPath;
-                if (files.Count() > 0) {
+                if (files.Count > 0) {
                     string upload = webRootPath + Startup.ImagePath;
                     string fileName = Guid.NewGuid().ToString();
                     string extension = Path.GetExtension(files[0].FileName);

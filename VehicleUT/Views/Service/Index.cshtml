@@ -92,20 +92,6 @@
                 },
             });
 
-            var swap = document.getElementById('swap');
-            swap.addEventListener('click', function () {
-                if (swap.value == 'List View') {
-                    calendar.changeView('listYear');
-                    swap.value = 'Calendar View';
-                }
-                else {
-                    calendar.changeView('dayGridMonth');
-                    swap.value = 'List View';
-                }
-                var date = new Date();
-                calendar.gotoDate(date.toISOString());
-            });
-
             var filter = document.getElementsByClassName('filter');
             for (let k = 0; k < filter.length; k++) {
                 var fil = filter[k]
@@ -127,6 +113,20 @@
                     }
                 });
             };
+
+            var swap = document.getElementById('swap');
+            swap.addEventListener('click', function () {
+                if (swap.value == 'List View') {
+                    calendar.changeView('listYear');
+                    swap.value = 'Calendar View';
+                }
+                else {
+                    calendar.changeView('dayGridMonth');
+                    swap.value = 'List View';
+                }
+                var date = new Date();
+                calendar.gotoDate(date.toISOString());
+            });
 
             var search = document.getElementById('searchbar');
             search.addEventListener('keyup', function () {

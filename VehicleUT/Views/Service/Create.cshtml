@@ -11,11 +11,11 @@
 
                 <div class="form-group row">
                     <div class="col-4">
-                        <label asp-for="service.VehicleId"></label>
+                        <label asp-for="service.VehicleId">Vehicle</label>
                     </div>
                     <div class="col-8">
                         <select asp-for="service.VehicleId" asp-items="@Model.vehicleSelectList" class="form-control">
-                            <option disabled selected>--Select Category--</option>
+                            <option disabled selected>--Select Vehicle--</option>
                         </select>
                         <span asp-validation-for="service.VehicleId" class="text-danger"></span>
                     </div>

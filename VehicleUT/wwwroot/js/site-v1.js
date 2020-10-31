@@ -26,6 +26,7 @@ function openModal(id) {
     document.getElementById(id).style.display = 'block';
 }
 
+
 function dateFormat(time) {
     var dt = new Date(time);
     var DD = ("0" + dt.getDate()).slice(-2);
@@ -64,3 +65,18 @@ function getIndex(array, event) {
     }
     return -1;
 }
+
+function infoS() {
+
+    document.getElementById('info').style.display = 'block';
+}
+function infoH() {
+    document.getElementById('info').style.display = 'none';
+}
+
+//var ib = document.getElementsByClassName('fas fa-info-circle');
+//for (var i = 0; i < ib.length; i++) {
+//    ib[i].addEventListener('mouseenter', function (event) {
+
+//    })
+//}

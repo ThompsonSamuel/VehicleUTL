@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,14 +50,33 @@ namespace VehicleUT.Controllers {
         [HttpPost]
         public IActionResult Edit(Vehicle vehicle) {
             if (ModelState.IsValid) {
-                Vehicle dbVehicle = db.Vehicle.Find(vehicle.VehicleId);
-                Vehicle newData = 
-
                 db.Vehicle.Update(vehicle);
                 db.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
             return View(vehicle);
+        }
+
+        public IActionResult Update(Vehicle vehicle) {
+            if (ModelState.IsValid) {
+                Vehicle dbVehicle = db.Vehicle.AsNoTracking().FirstOrDefault(c => c.VehicleId == vehicle.VehicleId);
+                Vehicle newData = new Vehicle() {
+                    milesGone = dbVehicle.recordedLastFuel == true && vehicle.fuelUsed != 0 ? dbVehicle.milesGone += vehicle.Mileage - dbVehicle.Mileage : dbVehicle.milesGone,
+                    fuelUsed = dbVehicle.recordedLastFuel == true && vehicle.fuelUsed != 0 ? dbVehicle.fuelUsed + vehicle.fuelUsed : dbVehicle.fuelUsed,
+                    recordedLastFuel = vehicle.fuelUsed == 0 ? false : true,
+                    VehicleId = dbVehicle.VehicleId,
+                    Make = dbVehicle.Make,
+                    Model = dbVehicle.Model,
+                    Year = dbVehicle.Year,
+                    Mileage = vehicle.Mileage,
+                    UserId = dbVehicle.UserId
+                };
+
+                db.Vehicle.Update(newData);
+                db.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(nameof(Index));
         }
 
         public IActionResult Delete(int id) {
@@ -75,6 +95,5 @@ namespace VehicleUT.Controllers {
         //    db.SaveChanges();
         //    return RedirectToAction(nameof(Index));
         //}
-
     }
 }

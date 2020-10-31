@@ -276,6 +276,9 @@ namespace VehicleUT.Migrations
                     b.Property<int>("milesGone")
                         .HasColumnType("int");
 
+                    b.Property<bool>("recordedLastFuel")
+                        .HasColumnType("bit");
+
                     b.HasKey("VehicleId");
 
                     b.HasIndex("UserId");
