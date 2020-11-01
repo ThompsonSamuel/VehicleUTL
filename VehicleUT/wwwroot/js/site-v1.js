@@ -23,8 +23,21 @@ function closeAll() {
 };
 
 function openModal(id) {
-    document.getElementById(id).style.display = 'block';
+    var modal = document.getElementById(id);
+    modal.style.display = 'block';
+
+    $('.w-40').on('click', function () {
+        $(modal).fadeOut(200);
+    })
+    $(modal).on('click', function (event) {
+        if (event.target == modal) {
+            $(modal).fadeOut(200);
+        }
+    })
 }
+
+
+
 
 
 function dateFormat(time) {
@@ -65,18 +78,3 @@ function getIndex(array, event) {
     }
     return -1;
 }
-
-function infoS() {
-
-    document.getElementById('info').style.display = 'block';
-}
-function infoH() {
-    document.getElementById('info').style.display = 'none';
-}
-
-//var ib = document.getElementsByClassName('fas fa-info-circle');
-//for (var i = 0; i < ib.length; i++) {
-//    ib[i].addEventListener('mouseenter', function (event) {
-
-//    })
-//}

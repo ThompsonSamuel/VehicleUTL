@@ -5,6 +5,9 @@
     <link href='~/css/service-v1.css' rel='stylesheet' />
     <link href='~/calendar/main.css' rel='stylesheet' />
     <link href="~/css/W3.css" rel="stylesheet" />
+    <script src="~/calendar/main.js"></script>
+    <script src="~/js/site-v1.js"></script>
+    <script src="~/calendar/locales-all.js"></script>
 </head>
 
 <body>
@@ -60,15 +63,13 @@
             <img class="modal-receipt" style="width: 60%" src="" alt="" />
         </div>
         <a asp-action="Edit" type="button" id="modal-edit" class="btn btn-warning">Edit</a>
-        <button id="close" type="button" class="btn btn-danger">Close</button>
+        <a asp-action="Delete" type="button" onclick="return confirm('Are you sure you want to delete this Service?')" id="modal-delete" class="btn btn-danger">Delete</a>
+        <button id="close" type="button" class="btn btn-secondary">Close</button>
     </div>
 </div>
 
 
 @section Scripts{
-    <script src="~/calendar/main.js"></script>
-    <script src="~/js/site-v1.js"></script>
-    <script src="~/calendar/locales-all.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
@@ -80,6 +81,7 @@
                 color: event.backgroundColor,
                 eventClick: function (info) {
                     $('#modal-edit').attr('href', document.URL + info.event.extendedProps.edit);
+                    $('#modal-delete').attr('href', document.URL + info.event.extendedProps.delete);
                     $('.modal-title').html(info.event.title);
                     $('.modal-location').html(info.event.extendedProps.location);
                     $('.modal-date').html(dateFormat(info.event.start));
@@ -143,6 +145,7 @@
                     
                 };
             });
+
             calendar.render();
         });
 

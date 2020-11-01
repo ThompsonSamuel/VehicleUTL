@@ -15,5 +15,8 @@ namespace VehicleUT.Models.ViewModels {
             new SelectListItem { Text = "Repair", Value = "Repair" },
             new SelectListItem { Text = "Issue", Value = "Issue" }
         };
+
+        public int timeNext { get; set; }
+        public int milesNext { get; set; }
     }
 }

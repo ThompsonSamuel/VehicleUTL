@@ -7,14 +7,14 @@
         </div>
 
         <div class="row">
-            <div class="col-8">
+            <div class="col-12">
 
                 <div class="form-group row">
                     <div class="col-4">
                         <label asp-for="service.VehicleId">Vehicle</label>
                     </div>
                     <div class="col-8">
-                        <select asp-for="service.VehicleId" asp-items="@Model.vehicleSelectList" class="form-control">
+                        <select id="id" asp-for="service.VehicleId" asp-items="@Model.vehicleSelectList" class="form-control">
                             <option disabled selected>--Select Vehicle--</option>
                         </select>
                         <span asp-validation-for="service.VehicleId" class="text-danger"></span>
@@ -26,7 +26,7 @@
                         <label asp-for="service.Date"></label>
                     </div>
                     <div class="col-8">
-                        <input asp-for="service.Date" class="form-control" />
+                        <input id="date" asp-for="service.Date" class="form-control" value="" />
                         <span asp-validation-for="service.Date" class="text-danger"></span>
                     </div>
                 </div>
@@ -36,7 +36,7 @@
                         <label asp-for="service.Title">Type of Event</label>
                     </div>
                     <div class="col-8">
-                        <select asp-for="service.Title" asp-items="@Model.typeService" class="form-control">
+                        <select id="title" asp-for="service.Title" asp-items="@Model.typeService" class="form-control">
                             <option disabled selected>--Select Service Type--</option>
                         </select>
                         <span asp-validation-for="service.Title" class="text-danger"></span>
@@ -48,7 +48,7 @@
                         <label asp-for="service.Location">Name of Location</label>
                     </div>
                     <div class="col-8">
-                        <input asp-for="service.Location" class="form-control" />
+                        <input id="location" asp-for="service.Location" class="form-control" />
                         <span asp-validation-for="service.Location" class="text-danger"></span>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                         <label asp-for="service.Description"></label>
                     </div>
                     <div class="col-8">
-                        <input asp-for="service.Description" class="form-control" />
+                        <input id="description" asp-for="service.Description" class="form-control" />
                         <span asp-validation-for="service.Description" class="text-danger"></span>
                     </div>
                 </div>
@@ -73,10 +73,19 @@
                 </div>
 
                 <div class="form-group row">
-                    <div class="col-8 offset-4 row">
+                    <div class="col-4">
+                        <label>Set reminder for next service?</label>
+                    </div>
+                    <div class="col-8">
+                        <i id="scheduleNext" class="fas fa-window-close" style="font-size:2em; cursor:pointer"></i>
+                        <i id="scheduled" class="fas fa-check-square" style="font-size:2em; color:green" hidden></i>
+                    </div>
+                </div>
 
+                <div class="form-group row">
+                    <div class="col-8 offset-4 row">
                         <div class="col">
-                            <input type="submit" onclick="return validateInput()" class="btn btn-primary w-100" value="Create" />
+                            <input type="submit" class="btn btn-primary w-100" value="Create" />
                         </div>
                         <div class="col">
                             <a asp-action="Index" class="btn btn-warning w-100"><i class="fas fa-sign-out-alt"></i> Back</a>
@@ -87,9 +96,90 @@
         </div>
     </div>
 </form>
+<div class="modal fade" id="next">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-body">
+            <form method="post" asp-action="CreateFuture">
+                <input id="Nid" asp-for="service.VehicleId" hidden />
+                <input id="Ndate" asp-for="service.Date" hidden />
+                <div class="form-group row">
+                    <div class="col-6">
+                        <input id="vehicle" class="form-control" disabled />
+                    </div>
+                    <div class="col-6">
+                        <input id="Ntitle" asp-for="service.Title" class="form-control" disabled />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label>Miles until next service?</label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="milesNext" class="form-control" type="number" value="" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label>Months until next service?</label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="timeNext" class="form-control" type="number" value="" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="service.Location">Name of Location</label>
+                    </div>
+                    <div class="col-8">
+                        <input id="Nlocation" asp-for="service.Location" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="service.Description"></label>
+                    </div>
+                    <div class="col-8">
+                        <input id="Ndescription" asp-for="service.Description" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-8 offset-4 row">
+                        <div class="col">
+                            <input type="submit" id="sched" class="btn btn-primary w-100" value="Create" />
+                        </div>
+                        <div class="col">
+                            <a class="btn btn-warning w-100"><i class="fas fa-sign-out-alt"></i> Back</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 @section Scripts{
-    @{
-        <partial name="_ValidationScriptsPartial" />
-    }
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var schedule = document.getElementById('scheduleNext');
+            schedule.addEventListener('click', function () {
+                $('#Nid').attr('value', $('#id').val());
+                $('#Ndate').attr('value', $('#date').val());
+                $('#vehicle').attr('value', $('#id option:selected').text());
+                $('#Ntitle').attr('value', $('#title').val());
+                $('#Nlocation').attr('value', $('#location').val());
+                $('#Ndescription').attr('value', $('#description').val());
+                $('#next').modal('show');
+                $('.w-100').on('click', function () {
+                    $('#next').modal('hide');
+                });
+            });
+            $('#sched').on('click', function () {
+                $(schedule).attr('visibility', hidden);
+                $('#scheduled').attr('visibility', show);
+            })
+        })
+
+    </script>
 }

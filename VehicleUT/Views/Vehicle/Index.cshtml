@@ -1,9 +1,8 @@
 ﻿@model IEnumerable<Vehicle>
 
-
 <head>
-    <link href="~/css/site-v1.css" rel="stylesheet" />
     <link href='~/css/service-v1.css' rel='stylesheet' />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="~/js/site-v1.js"></script>
 </head>
 
@@ -12,8 +11,15 @@
     <div class="col-6" style="text-align:center">
         <h2 class="text-info">Your Vehicles</h2>
     </div>
-    <div class="col-6" style="text-align:center">
-        <a asp-action="Create" class="btn btn-info form-control text-white">Add Vehicle</a>
+    <div class="flex-row" style="text-align:center">
+        @if (ViewBag.count > 0) {
+            <i class="fas fa-bell" id="alerts" style="margin-right:50px; margin-left:50px; cursor:pointer; color:red; font-size:25px"></i>
+        }
+        else {
+            <i class="fas fa-bell" id="alerts" style="margin-right:50px; margin-left:50px; cursor:pointer; font-size:25px"></i>
+        }
+
+        <a asp-action="Create" class="btn btn-info">Add Vehicle</a>
     </div>
 </div>
 <br />
@@ -58,24 +64,24 @@
                                 if (!double.IsNaN(mpg)) {
                                     <div style="padding:20px">
                                         <p>Estimate of: @mpg.ToString("#.##") MPG &nbsp;<i class="fas fa-info-circle"></i></p>
-                                        <i class="fas fa-gas-pump"></i>&nbsp;<input asp-for="@Model.ElementAt(i).fuelUsed" value="" />
+                                        <i class="fas fa-gas-pump"></i>&nbsp;<input asp-for="@Model.ElementAt(i).fuelUsed" value="" type="number" style="text-align:center" />
                                     </div>
 
                                 }
                                 else {
                                     <div style="padding:20px; border:thin solid #d51f1f;background-color:lightcoral">
                                         <p>Gallons of Fuel &nbsp;<i class="fas fa-info-circle"></i></p>
-                                        <i class="fas fa-gas-pump"></i>&nbsp;<input asp-for="@Model.ElementAt(i).fuelUsed" value="" />
+                                        <i class="fas fa-gas-pump"></i>&nbsp;<input asp-for="@Model.ElementAt(i).fuelUsed" value="" style="text-align:center" />
                                     </div>
                                 }
                             }
                             <div style="padding:20px">
                                 <p>Current Mileage</p>
-                                <i class="fas fa-road"></i>&nbsp;<input asp-for="@Model.ElementAt(i).Mileage" />
+                                <i class="fas fa-road"></i>&nbsp;<input asp-for="@Model.ElementAt(i).Mileage" style="text-align:center" />
                             </div>
                             <div style="padding:20px">
                                 <input type="submit" class="btn btn-success w-40" value="Submit" />
-                                <a asp-action="Index" class="btn btn-warning w-40"><i class="fas fa-sign-out-alt"></i> Back</a>
+                                <a style="cursor:pointer" class="btn btn-warning w-40"><i class="fas fa-sign-out-alt"></i> Back</a>
                             </div>
                         </form>
                     </div>
@@ -86,26 +92,60 @@
     else {
         <p>No Vehicles Listed</p>
     }
+</div>
 
-    <div class="box" id="info" style="display:none; position:absolute">
-        <div style="width:400px; background-color:#000000">
-            <div style="text-align:left; padding:15px">
-                <p>
-                    This feature calculates your average fuel economy. For this to be accurate your mileage should only be updated when you get fuel. Results will not display until fuel levels have been put it with mileage twice in a row.
-                </p>
-            </div>
+<div class="modal" id="reminder" accesskey="@ViewBag.count" style="display:none">
+    <div class="modal-content" id="content">
+        <div class="modal-header">
+            <h4 class="modal-title">Upcomming Services!</h4>
+        </div>
+        <div class="modal-body">
+                @if (ViewBag.count > 0) {
+                    <ul class="list-group">
+                        @foreach (var i in ViewBag.alert) {
+                            var vehicle = @Model.FirstOrDefault(c => c.VehicleId == i.VehicleId);
+                            <li class="list-group-item">
+                                <h5>@vehicle.Make  @vehicle.Model @vehicle.Year  &nbsp;Location: @i.Location &nbsp; @i.Date.ToString("dddd, MMM d") at @i.Date.ToString("h:m tt")</h5>
+                            </li>
+                        }
+                    </ul>
+                }
+                else {
+                    <h4>No known upcomming service</h4>
+                }
+        </div>
+        <div id="closeReminder" style="position:absolute;top:-2px;right:0px">
+            <i class="fas fa-window-close" style="font-size:35px"></i>
         </div>
     </div>
 </div>
 
-<script>
 
-    var ib = document.getElementsByClassName('fas fa-info-circle');
-    let info = document.getElementById('info');
-    for (let i = 0; i < ib.length; i++) {
-        var ibs = ib[i];
-        ibs.addEventListener('click', function () {
-            ibs.style.left = 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        $('.fa-info-circle').tooltip({
+            title: 'This feature calculates your average fuel economy. For this to be accurate your mileage should only be updated when you get fuel. Results will not display until fuel levels have been put it with mileage twice in a row.',
+            placement: 'bottom'
+        });
+        var day = new Date();
+        day = day.getMonth().toString() + day.getDate().toString();
+        var reminder = document.getElementById('reminder');
+        if (reminder.accessKey > 0 && sessionStorage.getItem('alert') != day) {
+            reminder.style.display = 'block';
+            sessionStorage.setItem('alert', day)
+        }
+        $('#alerts').on('click', function () {
+            reminder.style.display = 'block';
         })
-    }
+        $(reminder).on('click', function (event) {
+            if (event.target == reminder) {
+                $(reminder).fadeOut(250);
+            }
+        })
+        $('#closeReminder').on('click', function (event) {
+            $(reminder).fadeOut(250);
+        })
+
+
+    });
 </script>

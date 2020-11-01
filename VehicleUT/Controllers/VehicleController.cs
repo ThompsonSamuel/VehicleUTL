@@ -20,7 +20,11 @@ namespace VehicleUT.Controllers {
         }
 
         public IActionResult Index() {
+            DateTime today = DateTime.Today;
             IEnumerable<Vehicle> vehicles = db.Vehicle.Where(c => c.UserId == userManager.GetUserId(HttpContext.User));
+            IEnumerable<Service> services = db.Service.Where(c => vehicles.Any(x => x.VehicleId == c.VehicleId)).Where(c=>c.Date >= today && c.Date <= today.AddDays(7));
+            ViewBag.alert = services;
+            ViewBag.count = services.Count();
             return View(vehicles);
         }
 

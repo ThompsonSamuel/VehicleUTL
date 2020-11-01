@@ -52,6 +52,7 @@ namespace VehicleUT.Controllers {
                 description = c.Description,
                 receipt = Startup.ImagePath + c.Receipt,
                 location = c.Location,
+                delete = "/Delete/" + c.ServiceId,
                 id = c.ServiceId
             });
             return new JsonResult(events);
@@ -100,8 +101,22 @@ namespace VehicleUT.Controllers {
             return View(serviceVM.service);
         }
 
+        [HttpPost]
+        public void CreateFuture(ServiceVM serviceVM) {
+            if (ModelState.IsValid) {
+                if (serviceVM.milesNext > 0) {
+                    serviceVM.service.serviceMiles = db.Vehicle.Find(serviceVM.service.VehicleId).Mileage + serviceVM.milesNext;
+                }
+                if (serviceVM.timeNext > 0) {
+                    serviceVM.service.Date = serviceVM.service.Date.AddMonths(serviceVM.timeNext);
+                }
+                db.Service.Add(serviceVM.service);
+                db.SaveChanges();
+            }
+        }
+
         public IActionResult Edit(int id) {
-            var serviceids = db.Service.Where(c => db.Vehicle.Where(x => x.UserId == userManager.GetUserId(HttpContext.User)).Any(x => x.VehicleId == c.VehicleId)).Select(c=>c.ServiceId);
+            var serviceids = db.Service.Where(c => db.Vehicle.Where(x => x.UserId == userManager.GetUserId(HttpContext.User)).Any(x => x.VehicleId == c.VehicleId)).Select(c => c.ServiceId);
             if (serviceids.Contains(id)) {
                 ServiceVM serviceVM = new ServiceVM() {
                     service = new Service(),
@@ -146,6 +161,21 @@ namespace VehicleUT.Controllers {
             }
             db.Service.Update(serviceVM.service);
             db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Delete(int id) {
+            Service service = db.Service.Find(id);
+            if (service != null) {
+                if (service.Receipt != null) {
+                    var reciept = Path.Combine(webHostEnvironment.WebRootPath + Startup.ImagePath, service.Receipt);
+                    if (System.IO.File.Exists(reciept)) {
+                        System.IO.File.Delete(reciept);
+                    }
+                }
+                db.Service.Remove(service);
+                db.SaveChanges();
+            }
             return RedirectToAction("Index");
         }
     }
