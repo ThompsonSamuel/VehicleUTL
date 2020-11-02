@@ -100,19 +100,27 @@
             <h4 class="modal-title">Upcomming Services!</h4>
         </div>
         <div class="modal-body">
-                @if (ViewBag.count > 0) {
-                    <ul class="list-group">
-                        @foreach (var i in ViewBag.alert) {
-                            var vehicle = @Model.FirstOrDefault(c => c.VehicleId == i.VehicleId);
+            @if (ViewBag.count > 0) {
+                <ul class="list-group">
+                    @foreach (var i in ViewBag.alert) {
+                        var vehicle = @Model.FirstOrDefault(c => c.VehicleId == i.VehicleId);
+                        int remander = vehicle.Mileage - i.serviceMiles;
+                        if (remander <= 100) {
+                            <li class="list-group-item">
+                                <h5>@vehicle.Make  @vehicle.Model @vehicle.Year  &nbsp;Location: @i.Location &nbsp; @i.Date.ToString("dddd, MMM d") in @remander Miles</h5>
+                            </li>
+                        }
+                        else {
                             <li class="list-group-item">
                                 <h5>@vehicle.Make  @vehicle.Model @vehicle.Year  &nbsp;Location: @i.Location &nbsp; @i.Date.ToString("dddd, MMM d") at @i.Date.ToString("h:m tt")</h5>
                             </li>
                         }
-                    </ul>
-                }
-                else {
-                    <h4>No known upcomming service</h4>
-                }
+                    }
+                </ul>
+            }
+            else {
+                <h4>No known upcomming service</h4>
+            }
         </div>
         <div id="closeReminder" style="position:absolute;top:-2px;right:0px">
             <i class="fas fa-window-close" style="font-size:35px"></i>

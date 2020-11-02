@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using VehicleUT.Models;
 using VehicleUT.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.X509Certificates;
 
 namespace VehicleUT.Controllers {
     [Authorize]
@@ -102,8 +103,7 @@ namespace VehicleUT.Controllers {
         }
 
         [HttpPost]
-        public void CreateFuture(ServiceVM serviceVM) {
-            if (ModelState.IsValid) {
+        public IActionResult CreateFuture(ServiceVM serviceVM) {
                 if (serviceVM.milesNext > 0) {
                     serviceVM.service.serviceMiles = db.Vehicle.Find(serviceVM.service.VehicleId).Mileage + serviceVM.milesNext;
                 }
@@ -112,7 +112,7 @@ namespace VehicleUT.Controllers {
                 }
                 db.Service.Add(serviceVM.service);
                 db.SaveChanges();
-            }
+            return RedirectToAction("Create", serviceVM);
         }
 
         public IActionResult Edit(int id) {
