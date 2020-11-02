@@ -22,9 +22,15 @@ namespace VehicleUT.Controllers {
         public IActionResult Index() {
             DateTime today = DateTime.Today;
             IEnumerable<Vehicle> vehicles = db.Vehicle.Where(c => c.UserId == userManager.GetUserId(HttpContext.User));
-            IEnumerable<Service> services = db.Service.Where(c => vehicles.Any(x => x.VehicleId == c.VehicleId)).Where(c=>c.Date >= today && c.Date <= today.AddDays(7));
+            IEnumerable<Service> services = db.Service.Where(c => vehicles.Any(x => x.VehicleId == c.VehicleId));
+            int j = 0;
+            foreach (var i in services) {
+                int temp = vehicles.FirstOrDefault(c => c.VehicleId == i.VehicleId).Mileage;
+                if ((i.serviceMiles - temp > 0 && i.serviceMiles - temp <= 100) || i.Date > today && i.Date <= today.AddDays(7))
+                    j++;
+            }
             ViewBag.alert = services;
-            ViewBag.count = services.Count();
+            ViewBag.count = j;
             return View(vehicles);
         }
 
@@ -65,9 +71,9 @@ namespace VehicleUT.Controllers {
             if (ModelState.IsValid) {
                 Vehicle dbVehicle = db.Vehicle.AsNoTracking().FirstOrDefault(c => c.VehicleId == vehicle.VehicleId);
                 Vehicle newData = new Vehicle() {
-                    milesGone = dbVehicle.recordedLastFuel == true && vehicle.fuelUsed != 0 ? dbVehicle.milesGone += vehicle.Mileage - dbVehicle.Mileage : dbVehicle.milesGone,
-                    fuelUsed = dbVehicle.recordedLastFuel == true && vehicle.fuelUsed != 0 ? dbVehicle.fuelUsed + vehicle.fuelUsed : dbVehicle.fuelUsed,
-                    recordedLastFuel = vehicle.fuelUsed == 0 ? false : true,
+                    milesGone = dbVehicle.recordedLastFuel == true && vehicle.fuelUsed != null ? dbVehicle.milesGone += vehicle.Mileage - dbVehicle.Mileage : dbVehicle.milesGone,
+                    fuelUsed = dbVehicle.recordedLastFuel == true && vehicle.fuelUsed != null ? dbVehicle.fuelUsed + vehicle.fuelUsed : dbVehicle.fuelUsed,
+                    recordedLastFuel = vehicle.fuelUsed == null ? false : true,
                     VehicleId = dbVehicle.VehicleId,
                     Make = dbVehicle.Make,
                     Model = dbVehicle.Model,

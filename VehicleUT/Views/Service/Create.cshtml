@@ -26,7 +26,7 @@
                         <label asp-for="service.Date"></label>
                     </div>
                     <div class="col-8">
-                        <input id="date" asp-for="service.Date" class="form-control" value="" />
+                        <input id="date" onchange="onChange()" asp-for="service.Date" class="form-control" value="" />
                         <span asp-validation-for="service.Date" class="text-danger"></span>
                     </div>
                 </div>
@@ -36,10 +36,18 @@
                         <label asp-for="service.Title">Type of Event</label>
                     </div>
                     <div class="col-8">
-                        <select id="title" asp-for="service.Title" asp-items="@Model.typeService" class="form-control">
+                        <select id="title" onchange="onChange()" asp-for="service.Title" asp-items="@Model.typeService" class="form-control">
                             <option disabled selected>--Select Service Type--</option>
                         </select>
                         <span asp-validation-for="service.Title" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div  id="errorCode" class="form-group row" style="display:none">
+                    <div class="vol-8 offset-4">
+                        <div class="col">
+                            <button id="error" class="btn btn-warning w-100">Have an error code?</button>
+                        </div>
                     </div>
                 </div>
 
@@ -72,20 +80,20 @@
                     </div>
                 </div>
 
-                <div class="form-group row">
+                <div id="reminderO" class="form-group row" style="display: none">
                     <div class="col-4">
                         <label>Set reminder for next service?</label>
                     </div>
                     <div class="col-8">
                         <i id="scheduleNext" class="fas fa-window-close" style="font-size:2em; cursor:pointer"></i>
-                        <i id="scheduled" class="fas fa-check-square" style="font-size:2em; color:green" hidden></i>
+                        <i id="scheduled" class="fas fa-check-square" style="font-size:2em; color:green; display:none"></i>
                     </div>
                 </div>
 
                 <div class="form-group row">
                     <div class="col-8 offset-4 row">
                         <div class="col">
-                            <input type="submit" class="btn btn-primary w-100" value="Create" />
+                            <button type="button" class="btn btn-primary w-100" value="Create">Create</button>
                         </div>
                         <div class="col">
                             <a asp-action="Index" class="btn btn-warning w-100"><i class="fas fa-sign-out-alt"></i> Back</a>
@@ -99,23 +107,24 @@
 <div class="modal fade" id="next">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-body">
-            <form asp-action="CreateFuture" method="post">
-                <input id="Nid" asp-for="service.VehicleId" hidden />
-                <input id="Ndate" asp-for="service.Date" hidden />
+            <form id="form">
+                <input id="Nid" type="text" hidden />
+                <input id="Ndate" type="text" hidden />
                 <div class="form-group row">
                     <div class="col-6">
                         <input id="vehicle" class="form-control" disabled />
                     </div>
                     <div class="col-6">
-                        <input id="Ntitle" asp-for="service.Title" class="form-control" disabled />
+                        <input id="Ntitle" type="text" class="form-control" disabled />
                     </div>
                 </div>
+                
                 <div class="form-group row">
                     <div class="col-4">
                         <label>Miles until next service?</label>
                     </div>
                     <div class="col-8">
-                        <input id="milesNext" asp-for="milesNext" class="form-control" type="number" value="" />
+                        <input id="milesNext" class="form-control" type="number" value="" />
                     </div>
                 </div>
                 <div class="form-group row">
@@ -123,32 +132,33 @@
                         <label>Months until next service?</label>
                     </div>
                     <div class="col-8">
-                        <input id="timeNext" asp-for="timeNext" class="form-control" type="number" value="" />
+                        <input id="timeNext" class="form-control" type="number" value="" />
+                        <span class="text-danger" id="warning"></span>
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-4">
-                        <label asp-for="service.Location">Name of Location</label>
+                        <label>Name of Location</label>
                     </div>
                     <div class="col-8">
-                        <input id="Nlocation" asp-for="service.Location" class="form-control" />
+                        <input id="Nlocation" type="text" class="form-control" />
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-4">
-                        <label asp-for="service.Description"></label>
+                        <label>Description</label>
                     </div>
                     <div class="col-8">
-                        <input id="Ndescription" asp-for="service.Description" class="form-control" />
+                        <input id="Ndescription" type="text" class="form-control" />
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-8 offset-4 row">
                         <div class="col">
-                            <button id="submit" class="btn btn-primary w-100" value="Create">Create</button>
+                            <button id="submit" class="btn btn-primary w-100">Submit</button>
                         </div>
                         <div class="col">
-                            <a class="btn btn-warning w-100"><i class="fas fa-sign-out-alt"></i> Back</a>
+                            <a id="close" class="btn btn-warning w-100"><i class="fas fa-sign-out-alt"></i> Back</a>
                         </div>
                     </div>
                 </div>
@@ -162,8 +172,8 @@
     <partial name="_ValidationScriptsPartial" />
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var schedule = document.getElementById('scheduleNext');
-            schedule.addEventListener('click', function () {
+
+            $('#scheduleNext').click(function () {
                 $('#Nid').attr('value', $('#id').val());
                 $('#Ndate').attr('value', $('#date').val());
                 $('#vehicle').attr('value', $('#id option:selected').text());
@@ -171,38 +181,59 @@
                 $('#Nlocation').attr('value', $('#location').val());
                 $('#Ndescription').attr('value', $('#description').val());
                 $('#next').modal('show');
-                $('.w-100').on('click', function () {
+                $('#close').click(function () {
                     $('#next').modal('hide');
                 });
             });
-            $('#submit').on('click', function () {
-                var serviceVM = {};
-                serviceVM.service.VehicleId = $('#Nid').val();
-                serviceVM.service.Date = $('#Ndate').val();
-                serviceVM.service.Title = $('#id option:selected').text();
-                serviceVM.service.Location = $('#Nlocation').val();
-                serviceVM.service.Description = $('#Ndescription').val();
-                serviceVM.milesNext = $('#milesNext').val();
-                serviceVM.timeNext = $('#timeNext').val();
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Action("CreateFuture")',
-                    data: '{serviceVM: ' + JSON.stringify(serviceVM) + '}',
-                    dataType: 'json',
-                    contentType: 'application/json; charset=utf-8',
-                    success: function () {
-                        $(schedule).attr('visibility', hidden);
-                        $('#scheduled').attr('visibility', show);
-                    },
-                    error: function () {
-                        alert: ("Error while saving");
-                    }
-                });
-                $('#next').modal('hide');
+            $('#submit').click(function (event) {
+                event.preventDefault();
 
-
+                if ($('#timeNext').val().length > 0) {
+                    var service = {
+                        VehicleId: $('#Nid').val(),
+                        Title: $('#Ntitle').val(),
+                        Date: $('#Ndate').val(),
+                        Location: $('#Nlocation').val(),
+                        Description: $('#Ndescription').val(),
+                        timeNext: $('#timeNext').val(),
+                        milesNext: $('#milesNext').val()
+                    };
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("CreateFuture", "Service")',
+                        data: JSON.stringify(service),
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        success: function () {
+                            alert: ("Success");
+                        },
+                        error: function () {
+                            alert: ("Error while saving");
+                        }
+                    });
+                    $('#scheduleNext').hide();
+                    $('#scheduled').fadeIn();
+                    $('#next').modal('hide');
+                }
+                else {
+                    $('#warning').text("Enter months until next service");
+                }
             });
         })
 
+        function onChange() {
+            if ($('#title').val() == 'Service' && $('#id').val() != null && Date.parse($('#date').val()) - Date.parse(new Date()) < 72000000) { //within 20 hours
+                $('#reminderO').slideDown();
+                $('#errorCode').slideUp();
+            }
+            else if ($('#title').val() == 'Issue') {
+                $('#errorCode').slideDown();
+                $('#reminderO').slideUp();
+            }
+            else {
+                $('#reminderO').slideUp();
+                $('#errorCode').slideUp();
+            }
+        };
     </script>
 }

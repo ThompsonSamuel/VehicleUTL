@@ -21,7 +21,7 @@ namespace VehicleUT.Models
         public int Mileage { get; set; }
 
         public int milesGone { get; set; }
-        [DefaultValue(0.00)]
+
         public double? fuelUsed { get; set; }
 
         public bool recordedLastFuel { get; set; }

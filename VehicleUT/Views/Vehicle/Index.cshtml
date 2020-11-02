@@ -104,13 +104,14 @@
                 <ul class="list-group">
                     @foreach (var i in ViewBag.alert) {
                         var vehicle = @Model.FirstOrDefault(c => c.VehicleId == i.VehicleId);
-                        int remander = vehicle.Mileage - i.serviceMiles;
-                        if (remander <= 100) {
+                        int remander = i.serviceMiles - vehicle.Mileage;
+                        DateTime date = DateTime.Today;
+                        if (remander <= 100 && remander > 0) {
                             <li class="list-group-item">
-                                <h5>@vehicle.Make  @vehicle.Model @vehicle.Year  &nbsp;Location: @i.Location &nbsp; @i.Date.ToString("dddd, MMM d") in @remander Miles</h5>
+                                <h5>@vehicle.Make  @vehicle.Model @vehicle.Year  &nbsp;Location: @i.Location &nbsp; in @remander Miles</h5>
                             </li>
                         }
-                        else {
+                        else if (i.Date >= date && i.Date <= date.AddDays(7)) {
                             <li class="list-group-item">
                                 <h5>@vehicle.Make  @vehicle.Model @vehicle.Year  &nbsp;Location: @i.Location &nbsp; @i.Date.ToString("dddd, MMM d") at @i.Date.ToString("h:m tt")</h5>
                             </li>

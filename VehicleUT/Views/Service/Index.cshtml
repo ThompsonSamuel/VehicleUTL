@@ -32,7 +32,7 @@
                         <div class="filter">
                             <input id="@i" type="checkbox" class="filterCheck" checked />
                             @foreach (var j in Model.ElementAt(i).ServiceID) {
-                                <p class="@i" style="display:block" hidden>@j</p>
+                                <p class="@i" style="display:block" id="@j" hidden></p>
                             }
                             <label>@Model.ElementAt(i).Name</label>
                         </div>
@@ -95,6 +95,22 @@
             });
 
             var filter = document.getElementsByClassName('filter');
+            var search = document.getElementById('searchbar');
+            search.addEventListener('keyup', function () {
+                let events = calendar.getEvents()
+                for (var i = 0; i < events.length; i++) {
+                    var tit = events[i].title;
+                    var loc = events[i].extendedProps.location;
+                    if ((tit.toUpperCase().indexOf(search.value.toUpperCase()) > -1 || loc.toUpperCase().indexOf(search.value.toUpperCase()) > -1) && document.getElementById(document.getElementById(events[i].id).className).checked) {
+                        events[i].setProp('display', 'auto');
+                    }
+                    else {
+                        events[i].setProp('display', 'none');
+                    }
+                };
+            });
+
+          
             for (let k = 0; k < filter.length; k++) {
                 var fil = filter[k]
                 fil.addEventListener('click', function () {
@@ -104,13 +120,17 @@
                     if (checkbox.checked == true) {
                         checkbox.checked = false
                         for (var i = 0; i < ids.length; i++) {
-                            calendar.getEventById(ids[i].innerHTML).setProp('display', 'none')
+                            calendar.getEventById(ids[i].id).setProp('display', 'none')
                         }
                     }
                     else {
                         checkbox.checked = true
                         for (var i = 0; i < ids.length; i++) {
-                            calendar.getEventById(ids[i].innerHTML).setProp('display', 'auto')
+                            var tit = calendar.getEventById(ids[i].id).title;
+                            var loc = calendar.getEventById(ids[i].id).extendedProps.location;
+                            if (tit.toUpperCase().indexOf(search.value.toUpperCase()) > -1 || loc.toUpperCase().indexOf(search.value.toUpperCase()) > -1) {
+                                calendar.getEventById(ids[i].id).setProp('display', 'auto')
+                            }
                         }
                     }
                 });
@@ -128,22 +148,6 @@
                 }
                 var date = new Date();
                 calendar.gotoDate(date.toISOString());
-            });
-
-            var search = document.getElementById('searchbar');
-            search.addEventListener('keyup', function () {
-                let events = calendar.getEvents()
-                for (var i = 0; i < events.length; i++) {
-                    var tit = events[i].title;
-                    var loc = events[i].extendedProps.location;
-                    if (tit.toUpperCase().indexOf(search.value.toUpperCase()) > -1 || loc.toUpperCase().indexOf(search.value.toUpperCase()) > -1) {
-                        events[i].setProp('display', 'auto');
-                    }
-                    else {
-                        events[i].setProp('display', 'none');
-                    }
-                    
-                };
             });
 
             calendar.render();

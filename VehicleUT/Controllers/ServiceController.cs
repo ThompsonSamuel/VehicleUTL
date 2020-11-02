@@ -103,16 +103,21 @@ namespace VehicleUT.Controllers {
         }
 
         [HttpPost]
-        public IActionResult CreateFuture(ServiceVM serviceVM) {
-                if (serviceVM.milesNext > 0) {
-                    serviceVM.service.serviceMiles = db.Vehicle.Find(serviceVM.service.VehicleId).Mileage + serviceVM.milesNext;
-                }
-                if (serviceVM.timeNext > 0) {
-                    serviceVM.service.Date = serviceVM.service.Date.AddMonths(serviceVM.timeNext);
-                }
-                db.Service.Add(serviceVM.service);
+        public void CreateFuture([FromBody] FutureVM future) {
+            if (ModelState.IsValid) {
+                Vehicle vehicle = db.Vehicle.Find(future.VehicleId);
+                Service service = new Service() {
+                    VehicleId = future.VehicleId,
+                    Date = future.Date.AddMonths(future.timeNext),
+                    Title = future.Title,
+                    Location = future.Location,
+                    Description = future.Description,
+                    serviceMiles = future.milesNext + vehicle.Mileage
+                };
+
+                db.Service.Add(service);
                 db.SaveChanges();
-            return RedirectToAction("Create", serviceVM);
+            }
         }
 
         public IActionResult Edit(int id) {
