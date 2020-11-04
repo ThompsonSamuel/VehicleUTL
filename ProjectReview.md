@@ -21,4 +21,4 @@ Using a calendar plugin made many actions simple to implement.
 I repeatedly had to recreate the database, when originally designing it I did not understand the project requirements.
 
 
-Link to site: [vehicleut](https://vehicleut.azurewebsites.net)
+Link to site: [https://vehicleut.azurewebsites.net](https://vehicleut.azurewebsites.net)
