@@ -16,6 +16,7 @@ using VehicleUT.Models;
 using VehicleUT.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.X509Certificates;
+using HtmlAgilityPack;
 
 namespace VehicleUT.Controllers {
     [Authorize]
@@ -117,6 +118,26 @@ namespace VehicleUT.Controllers {
 
                 db.Service.Add(service);
                 db.SaveChanges();
+            }
+        }
+
+        [HttpPost]
+        public string Diagnostic([FromBody] TroubleCode dtc) {
+            var url = @"https://www.obd-data.com/?s=" + dtc.code;
+            var web = new HtmlWeb();
+            HtmlDocument doc = web.Load(url);
+
+            string node = doc.DocumentNode.SelectSingleNode("//p").InnerHtml;
+
+            if (node.Contains("OBD Code Definition:")) {
+                node = node.Remove(0, 27);
+                if (node.Contains("OBD Code Description:")) {
+                    node = node.Remove(node.IndexOf("OBD Code Description:") - 6);
+                }
+                return node;
+            }
+            else {
+                return "Could not find trouble code";
             }
         }
 

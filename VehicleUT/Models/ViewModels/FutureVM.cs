@@ -14,4 +14,7 @@ namespace VehicleUT.Models.ViewModels {
         public int timeNext { get; set; }
         public int milesNext { get; set; }
     }
+    public class TroubleCode {
+        public string code { get; set; }
+    }
 }

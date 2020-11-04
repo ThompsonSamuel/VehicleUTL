@@ -43,7 +43,7 @@
                     </div>
                 </div>
 
-                <div  id="errorCode" class="form-group row" style="display:none">
+                <div id="errorCode" class="form-group row" style="display:none">
                     <div class="vol-8 offset-4">
                         <div class="col">
                             <button id="error" class="btn btn-warning w-100">Have an error code?</button>
@@ -118,7 +118,7 @@
                         <input id="Ntitle" type="text" class="form-control" disabled />
                     </div>
                 </div>
-                
+
                 <div class="form-group row">
                     <div class="col-4">
                         <label>Miles until next service?</label>
@@ -158,7 +158,7 @@
                             <button id="submit" class="btn btn-primary w-100">Submit</button>
                         </div>
                         <div class="col">
-                            <a id="close" class="btn btn-warning w-100"><i class="fas fa-sign-out-alt"></i> Back</a>
+                            <a id="close" class="btn btn-warning w-100">Close</a>
                         </div>
                     </div>
                 </div>
@@ -167,6 +167,32 @@
     </div>
 </div>
 
+<div class="modal fade" id="errorSlide">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-body" style="text-align:center">
+            <form>
+                <div style="padding:20px">
+                    <p>Enter your <b>generic</b> diagnostic trouble code. &nbsp;<i class="fas fa-info-circle"></i></p>
+                </div>
+                <div class="form-group row">
+                    <div class="col-8 offset-2" style="padding-bottom:10px">
+                        <input type="text" id="dtc" class="form-control" />
+                        <textarea id="dtc_response" style="width:100%" hidden></textarea>
+                        <span class="text-danger" id="invalid"></span>
+                    </div>
+                </div>
+                <div class="form-group row" style="padding:20px">
+                    <div class="col">
+                        <button id="submitError" class="btn btn-primary w-100">Submit</button>
+                    </div>
+                    <div class="col">
+                        <a id="closeError" class="btn btn-warning w-100">Close</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
@@ -217,6 +243,52 @@
                 }
                 else {
                     $('#warning').text("Enter months until next service");
+                }
+            });
+
+
+            $('#error').click(function (event) {
+                event.preventDefault();
+                $('#errorSlide').modal('show');
+                $('#closeError').click(function () {
+                    $('#errorSlide').modal('hide');
+                })
+            });
+
+            $('#submitError').click(function (event) {
+                event.preventDefault();
+                
+                if ($('#dtc').val().length == 5) {
+                    $('#invalid').text('');
+                    var troublecode = {
+                        code: $('#dtc').val()
+                    };
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("Diagnostic", "Service")',
+                        data: JSON.stringify(troublecode),
+                        datatype: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (data) {
+                            $('#dtc').hide();
+                            $('#dtc_response').removeAttr('hidden');
+                            $('#dtc_response').text(data);
+                            
+                            $('#submitError').css('background-color', 'green');
+                            $('#submitError').text("Copy to Description");
+                            $('#submitError').click(function (event) {
+                                $('#description').val(data);
+                                $('#errorSlide').modal('hide');
+                                $('#errorCode').slideUp();
+                            });
+                        },
+                        error: function (data) {
+                            alert: data;
+                        }
+                    });
+                }
+                else {
+                    $('#invalid').text("invalid DTC");
                 }
             });
         })
