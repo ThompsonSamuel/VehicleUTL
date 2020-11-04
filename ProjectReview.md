@@ -20,5 +20,3 @@ Using a calendar plugin made many actions simple to implement.
 ### What would you change / what do you know now that you wish you knew "then"?
 I repeatedly had to recreate the database, when originally designing it I did not understand the project requirements.
 
-
-Link to site: [https://vehicleut.azurewebsites.net](https://vehicleut.azurewebsites.net)
