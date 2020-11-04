@@ -1,5 +1,9 @@
 ﻿@model VehicleUT.Models.ViewModels.ServiceVM
 
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+</head>
+
 <form method="post" enctype="multipart/form-data">
     <div class="border p-3">
         <div class="form-group row">
@@ -170,7 +174,7 @@
 <div class="modal fade" id="errorSlide">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-body" style="text-align:center">
-            <form>
+            <form id="error_code">
                 <div style="padding:20px">
                     <p>Enter your <b>generic</b> diagnostic trouble code. &nbsp;<i class="fas fa-info-circle"></i></p>
                 </div>
@@ -255,6 +259,11 @@
                 })
             });
 
+            $('.fa-info-circle').tooltip({
+                title: 'Most manufacturer Diagnostic Trouble Codes (DTC) start with a 1 fallowing the first letter, this DTC lookup may not be accurate for these.',
+                placement: 'bottom'
+            });
+
             $('#submitError').click(function (event) {
                 event.preventDefault();
                 
@@ -270,17 +279,22 @@
                         datatype: 'json',
                         contentType: 'application/json; charset=utf-8',
                         success: function (data) {
-                            $('#dtc').hide();
-                            $('#dtc_response').removeAttr('hidden');
-                            $('#dtc_response').text(data);
-                            
-                            $('#submitError').css('background-color', 'green');
-                            $('#submitError').text("Copy to Description");
-                            $('#submitError').click(function (event) {
-                                $('#description').val(data);
-                                $('#errorSlide').modal('hide');
-                                $('#errorCode').slideUp();
-                            });
+                            if (data != "false") {
+                                $('#dtc').hide();
+                                $('#dtc_response').removeAttr('hidden');
+                                $('#dtc_response').text(data);
+
+                                $('#submitError').css('background-color', 'green');
+                                $('#submitError').text("Copy to Description");
+                                $('#submitError').click(function (event) {
+                                    $('#description').val($('#description').val() + data);
+                                    $('#errorSlide').modal('hide');
+                                    $('#errorCode').slideUp();
+                                });
+                            }
+                            else {
+                                $('#invalid').text("Unknown invalid DTC");
+                            }
                         },
                         error: function (data) {
                             alert: data;
@@ -288,7 +302,7 @@
                     });
                 }
                 else {
-                    $('#invalid').text("invalid DTC");
+                    $('#invalid').text("Unknown invalid DTC");
                 }
             });
         })

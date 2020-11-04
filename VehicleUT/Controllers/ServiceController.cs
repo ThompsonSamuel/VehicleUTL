@@ -137,7 +137,7 @@ namespace VehicleUT.Controllers {
                 return node;
             }
             else {
-                return "Could not find trouble code";
+                return "false";
             }
         }
 
